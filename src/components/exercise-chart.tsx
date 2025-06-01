@@ -90,7 +90,7 @@ export default function ExerciseChart() {
   };
 
   const ChartUI = () => (
-    <ChartContainer config={chartConfig}>
+    <ChartContainer config={chartConfig} className="max-h-[60vh]">
       <LineChart data={chartData} margin={{ left: 12, right: 12 }}>
         <CartesianGrid vertical={false} />
         <XAxis
@@ -124,7 +124,7 @@ export default function ExerciseChart() {
       <Card className="max-w-2xl w-full">
         <CardHeader>
           <div className="flex justify-between items-start gap-8">
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-">
               <CardTitle className="text-base font-semibold">
                 {selectedExercise || "Select Exercise"}
               </CardTitle>
@@ -134,7 +134,7 @@ export default function ExerciseChart() {
             </div>
             <button
               onClick={() => setFullscreen(true)}
-              className="md:hidden text-muted-foreground p-2 hover:cursor-pointer"
+              className="text-muted-foreground p-2 hover:cursor-pointer"
               aria-label="Fullscreen chart"
             >
               <Maximize2 className="w-4 h-4" />
@@ -181,7 +181,7 @@ export default function ExerciseChart() {
       </Card>
 
       {fullscreen && (
-        <div className="fixed inset-0 bg-white z-50 p-4 overflow-auto flex flex-col gap-6">
+        <div className="fixed inset-0 md:container md:mx-auto bg-neutral-50 md:py-24 px-4 z-50 p-4 overflow-auto flex flex-col gap-6">
           <div className="flex justify-between items-center">
             <CardTitle className="text-base font-semibold">
               {selectedExercise}

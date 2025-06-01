@@ -9,20 +9,32 @@ import {
 
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
 import { Button } from "@/components/ui/button";
+import Papa from "papaparse";
+import { useEffect, useState } from "react";
+import { useStrongData } from "@/context/StrongDataContext";
 
-// Create some dummy initial files
-const initialFiles = [
-  {
-    name: "document.pdf",
-    size: 1528737,
-    type: "application/pdf",
-    url: "https://picsum.photos/1000/800?grayscale&random=1",
-    id: "document.pdf-1744638436563-8u5xuls",
-  },
-];
+type CsvRow = {
+  Date: string;
+  "Workout Name": string;
+  "Exercise Name": string;
+  Weight: string;
+  Reps: string;
+};
+
+type ParsedRow = {
+  date: Date;
+  workout: string;
+  exercise: string;
+  weight: number;
+  reps: number;
+  volume: number;
+};
 
 export default function FileUpload() {
-  const maxSize = 10 * 1024 * 1024; // 10MB default
+  const { setData } = useStrongData();
+  const maxSize = 10 * 1024 * 1024;
+
+  const [parsedData, setParsedData] = useState<ParsedRow[] | null>(null);
 
   const [
     { files, isDragging, errors },
@@ -35,16 +47,36 @@ export default function FileUpload() {
       removeFile,
       getInputProps,
     },
-  ] = useFileUpload({
-    maxSize,
-    initialFiles,
-  });
+  ] = useFileUpload({ maxSize });
 
   const file = files[0];
 
+  useEffect(() => {
+    if (!file) return;
+
+    Papa.parse<CsvRow>(file.file as File, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const rows = results.data;
+
+        const parsed: ParsedRow[] = rows.map((row) => ({
+          date: new Date(row.Date),
+          workout: row["Workout Name"],
+          exercise: row["Exercise Name"],
+          weight: parseFloat(row.Weight) || 0,
+          reps: parseFloat(row.Reps) || 0,
+          volume: (parseFloat(row.Weight) || 0) * (parseFloat(row.Reps) || 0),
+        }));
+
+        console.log("Parsed CSV rows:", parsed);
+        setParsedData(parsed);
+      },
+    });
+  }, [file]);
+
   return (
-    <div className="flex flex-col gap-2">
-      {/* Drop area */}
+    <div className="flex flex-col gap-2 max-w-md mx-auto w-full">
       <div
         role="button"
         onClick={openFileDialog}
@@ -53,7 +85,7 @@ export default function FileUpload() {
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         data-dragging={isDragging || undefined}
-        className="border-input hover:bg-accent/50 data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed p-4 transition-colors has-disabled:pointer-events-none has-disabled:opacity-50 has-[input:focus]:ring-[3px]"
+        className="border-input bg-white hover:bg-accent/50 data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed p-4 transition-colors"
       >
         <input
           {...getInputProps()}
@@ -63,10 +95,7 @@ export default function FileUpload() {
         />
 
         <div className="flex flex-col items-center justify-center text-center">
-          <div
-            className="bg-background mb-2 flex size-11 shrink-0 items-center justify-center rounded-full border"
-            aria-hidden="true"
-          >
+          <div className="bg-background mb-2 flex size-11 items-center justify-center rounded-full border">
             <UploadIcon className="size-4 opacity-60" />
           </div>
           <p className="mb-1.5 text-sm font-medium">Upload file</p>
@@ -81,12 +110,11 @@ export default function FileUpload() {
           className="text-destructive flex items-center gap-1 text-xs"
           role="alert"
         >
-          <AlertCircleIcon className="size-3 shrink-0" />
+          <AlertCircleIcon className="size-3" />
           <span>{errors[0]}</span>
         </div>
       )}
 
-      {/* File list */}
       {file && (
         <div className="space-y-2">
           <div
@@ -94,43 +122,35 @@ export default function FileUpload() {
             className="flex items-center justify-between gap-2 rounded-xl border px-4 py-2"
           >
             <div className="flex items-center gap-3 overflow-hidden">
-              <PaperclipIcon
-                className="size-4 shrink-0 opacity-60"
-                aria-hidden="true"
-              />
-              <div className="min-w-0">
-                <p className="truncate text-[13px] font-medium">
-                  {file.file.name}
-                </p>
-              </div>
+              <PaperclipIcon className="size-4 opacity-60" />
+              <p className="truncate text-[13px] font-medium">
+                {file.file.name}
+              </p>
             </div>
-
             <Button
               size="icon"
               variant="ghost"
               className="text-muted-foreground/80 hover:text-foreground -me-2 size-8 hover:bg-transparent"
-              onClick={() => removeFile(files[0]?.id)}
+              onClick={() => removeFile(file.id)}
               aria-label="Remove file"
             >
-              <XIcon className="size-4" aria-hidden="true" />
+              <XIcon className="size-4" />
             </Button>
           </div>
         </div>
       )}
 
-      <p
-        aria-live="polite"
-        role="region"
-        className="text-muted-foreground mt-2 text-center text-xs"
-      >
-        Single file uploader w/ max size ∙{" "}
-        <a
-          href="https://github.com/origin-space/originui/tree/main/docs/use-file-upload.md"
-          className="hover:text-foreground underline"
+      {parsedData && (
+        <Button
+          onClick={() => {
+            console.log("Submitting parsed data:", parsedData);
+            setData(parsedData);
+          }}
+          className="w-full hover:cursor-pointer"
         >
-          API
-        </a>
-      </p>
+          Submit & Load Data
+        </Button>
+      )}
     </div>
   );
 }

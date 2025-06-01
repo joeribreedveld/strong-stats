@@ -2,7 +2,7 @@
 
 StrongStats is a web app that lets you upload your Strong app workout export (`strong.csv`) and view your training progress in interactive charts.
 
-[![Watch the demo](https://img.youtube.com/vi/dc4vmXVJlPQ/hqdefault.jpg)](https://www.youtube.com/watch?v=dc4vmXVJlPQ)
+[Watch the demo](https://www.youtube.com/watch?v=dc4vmXVJlPQ)
 
 ## Features
 

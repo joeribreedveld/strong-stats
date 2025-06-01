@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Maximize2, X } from "lucide-react";
 
 type StrongDataEntry = {
   date: string;
@@ -39,6 +40,7 @@ export default function ExerciseChart() {
     "Bench Press (Barbell)"
   );
   const [metric, setMetric] = useState<"weight" | "volume" | "reps">("weight");
+  const [fullscreen, setFullscreen] = useState(false);
 
   const exercises = useMemo(() => {
     if (!data) return [];
@@ -87,79 +89,149 @@ export default function ExerciseChart() {
     },
   };
 
+  const ChartUI = () => (
+    <ChartContainer config={chartConfig}>
+      <LineChart data={chartData} margin={{ left: 12, right: 12 }}>
+        <CartesianGrid vertical={false} />
+        <XAxis
+          dataKey="date"
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          tickFormatter={(value) => format(new Date(value), "MMM yyyy")}
+        />
+        <YAxis
+          domain={["dataMin", (max: number) => max * 1.1]}
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          width={32}
+        />
+        <ChartTooltip content={<ChartTooltipContent />} />
+        <Line
+          dataKey="value"
+          type="monotone"
+          stroke="#2C93FF"
+          strokeWidth={2}
+          dot={{ r: 3 }}
+        />
+      </LineChart>
+    </ChartContainer>
+  );
+
   return (
-    <Card className="max-w-2xl w-full">
-      <CardHeader>
-        <CardTitle className="text-base font-semibold">
-          {selectedExercise || "Select Exercise"}
-        </CardTitle>
-        <CardDescription>
-          Highest {metric} per day (last 12 months)
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex gap-2 flex-wrap">
-          <Select
-            onValueChange={setSelectedExercise}
-            value={selectedExercise || ""}
-          >
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select exercise" />
-            </SelectTrigger>
-            <SelectContent>
-              {exercises.map((name) => (
-                <SelectItem key={name} value={name}>
-                  {name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    <>
+      <Card className="max-w-2xl w-full">
+        <CardHeader>
+          <div className="flex justify-between items-start gap-8">
+            <div className="flex flex-col gap-1.5">
+              <CardTitle className="text-base font-semibold">
+                {selectedExercise || "Select Exercise"}
+              </CardTitle>
+              <CardDescription>
+                Highest {metric} per day (last 12 months)
+              </CardDescription>
+            </div>
+            <button
+              onClick={() => setFullscreen(true)}
+              className="md:hidden text-muted-foreground p-2 hover:cursor-pointer"
+              aria-label="Fullscreen chart"
+            >
+              <Maximize2 className="w-4 h-4" />
+            </button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-8">
+          <div className="flex gap-2 flex-wrap">
+            <Select
+              onValueChange={setSelectedExercise}
+              value={selectedExercise || ""}
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Select exercise" />
+              </SelectTrigger>
+              <SelectContent>
+                {exercises.map((name) => (
+                  <SelectItem key={name} value={name}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Select
-            onValueChange={(v) => setMetric(v as "weight" | "volume" | "reps")}
-            value={metric}
-          >
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Metric" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="weight">Top Set (kg)</SelectItem>
-              <SelectItem value="volume">Volume</SelectItem>
-              <SelectItem value="reps">Top Reps</SelectItem>
-            </SelectContent>
-          </Select>
+            <Select
+              onValueChange={(v) =>
+                setMetric(v as "weight" | "volume" | "reps")
+              }
+              value={metric}
+            >
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Metric" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="weight">Top Set (kg)</SelectItem>
+                <SelectItem value="volume">Volume</SelectItem>
+                <SelectItem value="reps">Top Reps</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {chartData.length > 0 && <ChartUI />}
+        </CardContent>
+      </Card>
+
+      {fullscreen && (
+        <div className="fixed inset-0 bg-white z-50 p-4 overflow-auto flex flex-col gap-6">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-base font-semibold">
+              {selectedExercise}
+            </CardTitle>
+            <button
+              onClick={() => setFullscreen(false)}
+              className="text-muted-foreground hover:cursor-pointer"
+              aria-label="Close fullscreen"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="flex gap-2 flex-wrap">
+            <Select
+              onValueChange={setSelectedExercise}
+              value={selectedExercise || ""}
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Select exercise" />
+              </SelectTrigger>
+              <SelectContent>
+                {exercises.map((name) => (
+                  <SelectItem key={name} value={name}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              onValueChange={(v) =>
+                setMetric(v as "weight" | "volume" | "reps")
+              }
+              value={metric}
+            >
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Metric" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="weight">Top Set (kg)</SelectItem>
+                <SelectItem value="volume">Volume</SelectItem>
+                <SelectItem value="reps">Top Reps</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {chartData.length > 0 && <ChartUI />}
         </div>
-
-        {chartData.length > 0 && (
-          <ChartContainer config={chartConfig}>
-            <LineChart data={chartData} margin={{ left: 12, right: 12 }}>
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="date"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => format(new Date(value), "MMM yyyy")}
-              />
-              <YAxis
-                domain={["dataMin", (max: number) => max * 1.1]}
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                width={32}
-              />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Line
-                dataKey="value"
-                type="monotone"
-                stroke="#2C93FF"
-                strokeWidth={2}
-                dot={{ r: 3 }}
-              />
-            </LineChart>
-          </ChartContainer>
-        )}
-      </CardContent>
-    </Card>
+      )}
+    </>
   );
 }

@@ -76,7 +76,7 @@ export default function FileUpload() {
   }, [file]);
 
   return (
-    <div className="flex flex-col gap-2 max-w-md mx-auto w-full">
+    <div className="flex flex-col gap-2 max-w-md mx-auto w-full mt-10">
       <div
         role="button"
         onClick={openFileDialog}
@@ -85,7 +85,7 @@ export default function FileUpload() {
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         data-dragging={isDragging || undefined}
-        className="border-input bg-white hover:cursor-pointer hover:bg-neutral-100/75 group hover:border-neutral-300/75 data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed p-4 transition-colors"
+        className="border-neutral-200 bg-white hover:cursor-pointer hover:bg-neutral-100/75 group hover:border-neutral-300/75 data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed p-4 transition-colors"
       >
         <input
           {...getInputProps()}

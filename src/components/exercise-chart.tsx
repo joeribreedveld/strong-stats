@@ -23,7 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Maximize2, X } from "lucide-react";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type StrongDataEntry = {
   date: string;
@@ -42,6 +43,60 @@ export default function ExerciseChart() {
   const [metric, setMetric] = useState<"weight" | "volume" | "reps">("weight");
   const [fullscreen, setFullscreen] = useState(false);
 
+  const [startDate, setStartDate] = useState(() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 1);
+    return d;
+  });
+
+  const endDate = new Date(startDate);
+  endDate.setFullYear(endDate.getFullYear() + 1);
+
+  const isNextYearDisabled = () => {
+    const nextStart = new Date(startDate);
+    nextStart.setFullYear(nextStart.getFullYear() + 1);
+
+    const now = new Date();
+    return nextStart >= new Date(now.getFullYear(), now.getMonth(), 1);
+  };
+
+  const DateNav = () => (
+    <div className="flex items-center gap-2 mt-2 sm:mt-0">
+      <Button
+        variant="ghost"
+        className="hover:cursor-pointer"
+        size="sm"
+        onClick={() =>
+          setStartDate((prev) => {
+            const d = new Date(prev);
+            d.setFullYear(d.getFullYear() - 1);
+            return d;
+          })
+        }
+      >
+        ←
+      </Button>
+      <span className="text-sm">
+        {format(startDate, "yyyy")} – {format(endDate, "yyyy")}
+      </span>
+      <Button
+        variant="ghost"
+        className="hover:cursor-pointer"
+        size="sm"
+        onClick={() =>
+          setStartDate((prev) => {
+            const d = new Date(prev);
+            d.setFullYear(d.getFullYear() + 1);
+            return d;
+          })
+        }
+        disabled={isNextYearDisabled()}
+      >
+        →
+      </Button>
+    </div>
+  );
+
   const exercises = useMemo(() => {
     if (!data) return [];
     return Array.from(new Set(data.map((d) => d.exercise))).sort();
@@ -50,15 +105,14 @@ export default function ExerciseChart() {
   const chartData = useMemo(() => {
     if (!data || !selectedExercise) return [];
 
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-
     const grouped = new Map<string, number>();
 
     data
       .filter((d) => {
         const date = new Date(d.date);
-        return d.exercise === selectedExercise && date >= oneYearAgo;
+        return (
+          d.exercise === selectedExercise && date >= startDate && date < endDate
+        );
       })
       .forEach((entry) => {
         const key = new Date(entry.date).toISOString().split("T")[0];
@@ -70,10 +124,10 @@ export default function ExerciseChart() {
     return Array.from(grouped.entries())
       .map(([date, value]) => ({
         date,
-        value,
+        value: Math.round(value),
       }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [data, selectedExercise, metric]);
+  }, [data, selectedExercise, metric, startDate, endDate]);
 
   if (!data || exercises.length === 0) return null;
 
@@ -89,59 +143,60 @@ export default function ExerciseChart() {
     },
   };
 
-  const ChartUI = () => (
-    <ChartContainer config={chartConfig} className="max-h-[60vh]">
-      <LineChart data={chartData} margin={{ left: 12, right: 12 }}>
-        <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey="date"
-          tickLine={false}
-          axisLine={false}
-          tickMargin={8}
-          tickFormatter={(value) => format(new Date(value), "MMM yyyy")}
-        />
-        <YAxis
-          domain={["dataMin", (max: number) => max * 1.1]}
-          tickLine={false}
-          axisLine={false}
-          tickMargin={8}
-          width={32}
-        />
-        <ChartTooltip content={<ChartTooltipContent />} />
-        <Line
-          dataKey="value"
-          type="monotone"
-          stroke="#2C93FF"
-          strokeWidth={2}
-          dot={{ r: 3 }}
-        />
-      </LineChart>
-    </ChartContainer>
-  );
+  const ChartUI = () =>
+    chartData.length > 0 ? (
+      <ChartContainer config={chartConfig} className="max-h-[60vh]">
+        <LineChart data={chartData} margin={{ left: 12, right: 12 }}>
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="date"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+            tickFormatter={(value) => format(new Date(value), "MMM yyyy")}
+          />
+          <YAxis
+            domain={["dataMin", (max: number) => Math.ceil(max * 1.1)]}
+            tickFormatter={(val) => Math.round(val).toString()}
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+            width={32}
+          />
+          <ChartTooltip content={<ChartTooltipContent />} />
+          <Line
+            dataKey="value"
+            type="monotone"
+            stroke="#2C93FF"
+            strokeWidth={2}
+            dot={{ r: 3 }}
+          />
+        </LineChart>
+      </ChartContainer>
+    ) : (
+      <div className="border border-dashed rounded-xl text-muted-foreground aspect-video flex items-center justify-center text-xs">
+        No data for this exercise and date range
+      </div>
+    );
 
   return (
     <>
       <Card className="max-w-2xl w-full">
         <CardHeader>
-          <div className="flex justify-between items-start gap-8">
-            <div className="flex flex-col gap-">
-              <CardTitle className="text-base font-semibold">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 w-full">
+            <div className="flex flex-col">
+              <CardTitle className="text-[15px] mb-1 font-semibold leading-5">
                 {selectedExercise || "Select Exercise"}
               </CardTitle>
               <CardDescription>
-                Highest {metric} per day (last 12 months)
+                Highest {metric} per day ({format(startDate, "MMM yyyy")} –{" "}
+                {format(endDate, "MMM yyyy")})
               </CardDescription>
             </div>
-            <button
-              onClick={() => setFullscreen(true)}
-              className="text-muted-foreground p-2 hover:cursor-pointer"
-              aria-label="Fullscreen chart"
-            >
-              <Maximize2 className="w-4 h-4" />
-            </button>
+            <DateNav />
           </div>
         </CardHeader>
-        <CardContent className="space-y-8">
+        <CardContent className="space-y-6">
           <div className="flex gap-2 flex-wrap">
             <Select
               onValueChange={setSelectedExercise}
@@ -176,14 +231,14 @@ export default function ExerciseChart() {
             </Select>
           </div>
 
-          {chartData.length > 0 && <ChartUI />}
+          <ChartUI />
         </CardContent>
       </Card>
 
       {fullscreen && (
         <div className="fixed inset-0 md:container md:mx-auto bg-neutral-50 md:py-24 px-4 z-50 p-4 overflow-auto flex flex-col gap-6">
           <div className="flex justify-between items-center">
-            <CardTitle className="text-base font-semibold">
+            <CardTitle className="text-[15px] font-semibold">
               {selectedExercise}
             </CardTitle>
             <button
@@ -227,9 +282,11 @@ export default function ExerciseChart() {
                 <SelectItem value="reps">Top Reps</SelectItem>
               </SelectContent>
             </Select>
+
+            <DateNav />
           </div>
 
-          {chartData.length > 0 && <ChartUI />}
+          <ChartUI />
         </div>
       )}
     </>

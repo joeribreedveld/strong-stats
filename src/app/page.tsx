@@ -9,22 +9,33 @@ export default function Home() {
   const { data } = useStrongData();
 
   return (
-    <main className="px-4 sm:container py-16 sm:py-24 mx-auto flex items-center flex-col">
+    <main className="px-4 sm:container py-12 sm:py-24 mx-auto flex items-center flex-col">
       <div>
         <h1 className="text-center text-xl sm:text-2xl font-semibold tracking-tight">
           Strong Stats
         </h1>
-        <p className="text-neutral-500 text-sm text-balance max-w-sm text-center mt-4">
-          Export your Strong app data and upload it here to view your stats —{" "}
-          <span className="font-medium text-neutral-600">completely free</span>{" "}
-          and <span className="font-medium text-neutral-600">private</span>
+        <p className="text-neutral-500 text-sm text-pretty max-w-[400px] text-center mt-4">
+          Export your Strong app data{" "}
+          <span className="font-semibold">via settings</span> and upload it here
+          to view your stats —{" "}
+          <span className="font-semibold">completely free</span> and{" "}
+          <span className="font-semibold">private</span>
         </p>
       </div>
-      <div className="flex gap-24 w-full max-w-2xl mt-12">
-        {!data || data.length === 0 ? <FileUpload /> : <ExerciseChart />}
-      </div>
+      {data && data.length > 0 && (
+        <>
+          <div className="h-[1px] bg-neutral-200 w-full mt-12 lg:hidden"></div>
+          <div className="flex gap-24 w-full max-w-2xl mt-12">
+            <ExerciseChart />
+          </div>
+          <div className="h-[1px] bg-neutral-200 w-full mt-12 lg:hidden"></div>
+        </>
+      )}
+
+      {(!data || data.length === 0) && <FileUpload />}
+
       <div className="mx-auto mt-12">
-        <p className="text-sm text-neutral-700">
+        <p className="text-sm text-neutral-500">
           Made by{" "}
           <Link
             href="https://github.com/joeribreedveld"

@@ -152,7 +152,7 @@ export default function ExerciseChart() {
               <Line
                 dataKey="value"
                 type="monotone"
-                stroke="var(--color-value)"
+                stroke="#2C93FF"
                 strokeWidth={2}
                 dot={{ r: 3 }}
               />

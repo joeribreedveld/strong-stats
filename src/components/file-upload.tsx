@@ -98,7 +98,10 @@ export default function FileUpload() {
           <div className="bg-background mb-2 flex size-11 items-center justify-center rounded-full border group-hover:border-neutral-300/75">
             <UploadIcon className="size-4 opacity-60" />
           </div>
-          <p className="mb-1.5 text-sm font-medium">Upload strong.csv</p>
+          <p className="mb-1.5 text-sm font-medium">
+            Upload{" "}
+            <span className="text-[#2C93FF] font-semibold">strong.csv</span>
+          </p>
           <p className="text-muted-foreground text-xs">
             Drag & drop or click to browse (max. {formatBytes(maxSize)})
           </p>

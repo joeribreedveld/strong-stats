@@ -98,7 +98,7 @@ export default function ExerciseChart() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Select
             onValueChange={setSelectedExercise}
             value={selectedExercise || ""}

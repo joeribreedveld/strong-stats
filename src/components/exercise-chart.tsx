@@ -36,9 +36,9 @@ type StrongDataEntry = {
 export default function ExerciseChart() {
   const { data } = useStrongData() as { data: StrongDataEntry[] | null };
   const [selectedExercise, setSelectedExercise] = useState<string | null>(
-    "Pull Up"
+    "Bench Press (Barbell)"
   );
-  const [metric, setMetric] = useState<"weight" | "volume" | "reps">("reps");
+  const [metric, setMetric] = useState<"weight" | "volume" | "reps">("weight");
 
   const exercises = useMemo(() => {
     if (!data) return [];
@@ -90,8 +90,8 @@ export default function ExerciseChart() {
   return (
     <Card className="max-w-2xl w-full">
       <CardHeader>
-        <CardTitle className="text-base">
-          Progression – {selectedExercise || "Select Exercise"}
+        <CardTitle className="text-base font-semibold">
+          {selectedExercise || "Select Exercise"}
         </CardTitle>
         <CardDescription>
           Highest {metric} per day (last 12 months)

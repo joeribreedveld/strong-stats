@@ -47,7 +47,7 @@ export default function FileUpload() {
       removeFile,
       getInputProps,
     },
-  ] = useFileUpload({ maxSize });
+  ] = useFileUpload({ maxSize, accept: ".csv" }); // ✅ only accept CSV
 
   const file = files[0];
 
@@ -85,7 +85,7 @@ export default function FileUpload() {
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         data-dragging={isDragging || undefined}
-        className="border-input bg-white hover:bg-accent/50 data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed p-4 transition-colors"
+        className="border-input bg-white hover:cursor-pointer hover:bg-neutral-100/75 group hover:border-neutral-300/75 data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed p-4 transition-colors"
       >
         <input
           {...getInputProps()}
@@ -95,10 +95,10 @@ export default function FileUpload() {
         />
 
         <div className="flex flex-col items-center justify-center text-center">
-          <div className="bg-background mb-2 flex size-11 items-center justify-center rounded-full border">
+          <div className="bg-background mb-2 flex size-11 items-center justify-center rounded-full border group-hover:border-neutral-300/75">
             <UploadIcon className="size-4 opacity-60" />
           </div>
-          <p className="mb-1.5 text-sm font-medium">Upload file</p>
+          <p className="mb-1.5 text-sm font-medium">Upload strong.csv</p>
           <p className="text-muted-foreground text-xs">
             Drag & drop or click to browse (max. {formatBytes(maxSize)})
           </p>
@@ -119,7 +119,7 @@ export default function FileUpload() {
         <div className="space-y-2">
           <div
             key={file.id}
-            className="flex items-center justify-between gap-2 rounded-xl border px-4 py-2"
+            className="flex items-center justify-between gap-2 rounded-xl border bg-white px-4 py-2"
           >
             <div className="flex items-center gap-3 overflow-hidden">
               <PaperclipIcon className="size-4 opacity-60" />
@@ -130,7 +130,7 @@ export default function FileUpload() {
             <Button
               size="icon"
               variant="ghost"
-              className="text-muted-foreground/80 hover:text-foreground -me-2 size-8 hover:bg-transparent"
+              className="text-muted-foreground/80 hover:cursor-pointer hover:text-foreground -me-2 size-8 hover:bg-transparent"
               onClick={() => removeFile(file.id)}
               aria-label="Remove file"
             >
@@ -148,7 +148,7 @@ export default function FileUpload() {
           }}
           className="w-full hover:cursor-pointer"
         >
-          Submit & Load Data
+          Load Data
         </Button>
       )}
     </div>

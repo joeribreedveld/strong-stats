@@ -40,7 +40,9 @@ export default function ExerciseChart() {
   const [selectedExercise, setSelectedExercise] = useState<string | null>(
     "Bench Press (Barbell)"
   );
-  const [metric, setMetric] = useState<"weight" | "volume" | "reps">("weight");
+  const [metric, setMetric] = useState<
+    "weight" | "volume" | "reps" | "intensity"
+  >("weight");
   const [fullscreen, setFullscreen] = useState(false);
 
   const [startDate, setStartDate] = useState(() => {
@@ -55,7 +57,6 @@ export default function ExerciseChart() {
   const isNextYearDisabled = () => {
     const nextStart = new Date(startDate);
     nextStart.setFullYear(nextStart.getFullYear() + 1);
-
     const now = new Date();
     return nextStart >= new Date(now.getFullYear(), now.getMonth(), 1);
   };
@@ -116,7 +117,14 @@ export default function ExerciseChart() {
       })
       .forEach((entry) => {
         const key = new Date(entry.date).toISOString().split("T")[0];
-        const value = entry[metric];
+
+        const value =
+          metric === "intensity"
+            ? entry.reps > 0
+              ? entry.weight / entry.reps
+              : 0
+            : entry[metric];
+
         const prev = grouped.get(key);
         if (!prev || value > prev) grouped.set(key, value);
       });
@@ -138,7 +146,9 @@ export default function ExerciseChart() {
           ? "Top Set (kg)"
           : metric === "volume"
           ? "Volume (kg x reps)"
-          : "Top Reps",
+          : metric === "reps"
+          ? "Top Reps"
+          : "Intensity (kg/rep)",
       color: "var(--chart-1)",
     },
   };
@@ -153,7 +163,7 @@ export default function ExerciseChart() {
             tickLine={false}
             axisLine={false}
             tickMargin={8}
-            tickFormatter={(value) => format(new Date(value), "MMM yyyy")}
+            tickFormatter={(value) => format(new Date(value), "MMM ''yy")}
           />
           <YAxis
             domain={["dataMin", (max: number) => Math.ceil(max * 1.1)]}
@@ -216,7 +226,7 @@ export default function ExerciseChart() {
 
             <Select
               onValueChange={(v) =>
-                setMetric(v as "weight" | "volume" | "reps")
+                setMetric(v as "weight" | "volume" | "reps" | "intensity")
               }
               value={metric}
             >
@@ -227,6 +237,7 @@ export default function ExerciseChart() {
                 <SelectItem value="weight">Top Set (kg)</SelectItem>
                 <SelectItem value="volume">Volume</SelectItem>
                 <SelectItem value="reps">Top Reps</SelectItem>
+                <SelectItem value="intensity">Intensity (kg/rep)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -269,7 +280,7 @@ export default function ExerciseChart() {
 
             <Select
               onValueChange={(v) =>
-                setMetric(v as "weight" | "volume" | "reps")
+                setMetric(v as "weight" | "volume" | "reps" | "intensity")
               }
               value={metric}
             >
@@ -280,6 +291,7 @@ export default function ExerciseChart() {
                 <SelectItem value="weight">Top Set (kg)</SelectItem>
                 <SelectItem value="volume">Volume</SelectItem>
                 <SelectItem value="reps">Top Reps</SelectItem>
+                <SelectItem value="intensity">Intensity (kg/rep)</SelectItem>
               </SelectContent>
             </Select>
 

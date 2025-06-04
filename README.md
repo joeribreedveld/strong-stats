@@ -1,15 +1,24 @@
+
 # StrongStats
 
 StrongStats is a web app that lets you upload your Strong app workout export (`strong.csv`) and view your training progress in interactive charts.
 
-[Watch the demo](https://www.youtube.com/watch?v=dc4vmXVJlPQ)
+[Watch the demo](https://youtu.be/RyweH8juozg)
 
 ## Features
 
-- Upload your Strong CSV export
-- View top sets per day
-- Filter by exercise and metric (weight, reps, volume)
-- All data stays local, no server
+- Upload your Strong CSV export  
+- View top sets per day  
+- Filter by exercise and metric (weight, reps, volume)  
+- All data stays local, no server  
+
+## Screenshots
+
+### Desktop  
+![StrongStats desktop screenshot](https://github.com/user-attachments/assets/0103d9f9-05c4-4576-92ab-c0829dd92a85)
+
+### Mobile  
+<img src="https://github.com/user-attachments/assets/0c0f8b21-2e27-4128-b9b7-e7379abc54dc" width="50%" />
 
 ## Installation
 
@@ -17,8 +26,6 @@ StrongStats is a web app that lets you upload your Strong app workout export (`s
 
    ```bash
    git clone https://github.com/joeribreedveld/strong-stats.git
-
-   ```
 
 2. Navigate to the project directory:
 
@@ -45,3 +52,4 @@ StrongStats is a web app that lets you upload your Strong app workout export (`s
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
+

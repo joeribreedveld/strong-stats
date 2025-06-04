@@ -2,9 +2,7 @@
 
 import ExerciseChart from "@/components/exercise-chart";
 import FileUpload from "@/components/file-upload";
-import { Button } from "@/components/ui/button";
 import { useStrongData } from "@/context/StrongDataContext";
-import { GithubIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {

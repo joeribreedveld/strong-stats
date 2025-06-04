@@ -2,7 +2,9 @@
 
 import ExerciseChart from "@/components/exercise-chart";
 import FileUpload from "@/components/file-upload";
+import { Button } from "@/components/ui/button";
 import { useStrongData } from "@/context/StrongDataContext";
+import { GithubIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -35,15 +37,15 @@ export default function Home() {
       {(!data || data.length === 0) && <FileUpload />}
 
       <div className="mx-auto mt-12">
-        <p className="text-sm text-neutral-500">
-          Made by{" "}
+        <p className="text-sm text-neutral-500 flex items-center">
+          View on{" "}
           <Link
-            href="https://github.com/joeribreedveld"
+            href="https://github.com/joeribreedveld/strong-stats"
             target="_blank"
             rel="noreferrer noopener"
-            className="underline hover:text-neutral-800"
+            className="underline hover:text-neutral-800 ml-1"
           >
-            Joeri Breedveld
+            GitHub
           </Link>
         </p>
       </div>

@@ -15,7 +15,7 @@ StrongStats is a web app that lets you upload your Strong app workout export (`s
 ## Screenshots
 
 ### Desktop  
-![StrongStats desktop screenshot](https://github.com/user-attachments/assets/0103d9f9-05c4-4576-92ab-c0829dd92a85)
+![StrongStats desktop screenshot](https://github.com/user-attachments/assets/ece2de8e-0452-4fe1-9148-f674bd699839)
 
 ### Mobile  
 <img src="https://github.com/user-attachments/assets/0c0f8b21-2e27-4128-b9b7-e7379abc54dc" width="50%" />
